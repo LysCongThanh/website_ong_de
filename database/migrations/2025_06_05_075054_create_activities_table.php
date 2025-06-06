@@ -11,12 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tickets', function (Blueprint $table) {
+        Schema::create('activities', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('description')->nullable();
-            $table->text('includes')->nullable();
-            $table->boolean('is_active');
+            $table->string('slug')->unique();
+            $table->text('short_description')->nullable();
+            $table->text('long_description')->nullable();
+            $table->text('conditions')->nullable();
+            $table->string('location_area')->nullable();
+            $table->unsignedInteger('min_participants')->nullable();
+            $table->unsignedInteger('max_participants')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('last_updated_by')->nullable();
             $table->timestamps();
@@ -32,9 +37,8 @@ return new class extends Migration
                 ->on('users')
                 ->onDelete('set null');
 
-            $table->index('is_active', 'idx_tickets_active');
-            $table->index('created_by', 'idx_tickets_created_by');
-            $table->index('last_updated_by', 'idx_tickets_last_updated_by');
+            $table->fullText(['name', 'short_description'], 'idx_activities_search');
+
         });
     }
 
@@ -43,6 +47,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tickets');
+        Schema::dropIfExists('activities');
     }
 };
