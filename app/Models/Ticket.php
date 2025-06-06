@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\Trackable;
+use App\Traits\Translatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -9,13 +11,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ticket extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Trackable, Translatable;
 
     protected $fillable = [
         'name',
         'description',
         'includes',
         'is_active',
+        'created_by',
+        'last_updated_by',
     ];
 
     protected $casts = [
@@ -25,5 +29,14 @@ class Ticket extends Model
 
     public function categories(): BelongsToMany {
         return $this->belongsToMany(TicketCategory::class, 'ticket_category_relations');
+    }
+
+    public function translatedAttributes(): array
+    {
+        return [
+            'name',
+            'description',
+            'includes',
+        ];
     }
 }
