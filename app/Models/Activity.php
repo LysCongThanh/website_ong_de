@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Traits\Trackable;
+use App\Traits\Translatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Activity extends Model
 {
-    use HasFactory, SoftDeletes, Trackable;
+    use HasFactory, SoftDeletes, Trackable, Translatable;
 
     protected $fillable = [
         'name',
@@ -30,4 +31,15 @@ class Activity extends Model
         'min_participants' => 'integer',
         'max_participants' => 'integer',
     ];
+
+    public function translatedAttributes(): array
+    {
+        return [
+            'name',
+            'short_description',
+            'long_description',
+            'conditions',
+            'location_area'
+        ];
+    }
 }

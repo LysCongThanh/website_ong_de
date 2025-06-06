@@ -19,7 +19,7 @@ class UserResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $navigationLabel = 'Quản lý Tài Khoản';
-
+    protected static ?string $navigationGroup = 'Filament Shield';
     protected static ?string $modelLabel = 'Tài Khoản';
 
     public static function form(Form $form): Form
