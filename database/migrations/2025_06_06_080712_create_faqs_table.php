@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('faqs', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('faq_category_id')->references('id')->on('faq_categories')->onDelete('cascade');
             $table->text('question');
             $table->text('answer_plain');
             $table->text('answer_html');

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\HasMedia;
+use App\Traits\Policyable;
 use App\Traits\Trackable;
 use App\Traits\Translatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Activity extends Model
 {
-    use HasFactory, SoftDeletes, Trackable, Translatable;
+    use HasFactory, SoftDeletes, Trackable, Translatable, HasMedia, Policyable;
 
     protected $fillable = [
         'name',
