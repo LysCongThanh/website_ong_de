@@ -28,9 +28,15 @@ trait Translatable
             }
         });
 
-        static::deleted(function ($model) {
-            $model->translations()->delete();
-        });
+        if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses_recursive(static::class))) {
+            static::forceDeleted(function ($model) {
+                $model->translations()->delete();
+            });
+        } else {
+            static::deleted(function ($model) {
+                $model->translations()->delete();
+            });
+        }
     }
 
     public function translations(): MorphMany
@@ -54,7 +60,7 @@ trait Translatable
         $locale = $locale ?? app()->getLocale();
 
         $translation = $this->getTranslation($locale);
-
+        
         if (!$translation) {
             return $this->getAttribute($attribute); // Fallback to original
         }
@@ -193,6 +199,10 @@ trait Translatable
         return property_exists($this, 'autoTranslate') ? $this->autoTranslate : true;
     }
 
+    protected function hasSoftDelete(): bool {
+        return true;
+    }
+
     /**
      * Kiểm tra có attribute nào cần dịch bị thay đổi không
      */
@@ -237,6 +247,75 @@ trait Translatable
         }
 
         return $result;
+    }
+
+    /**
+     * Lấy bản dịch của toàn bộ bản ghi và các mối quan hệ liên quan
+     *
+     * @param string|null $locale Locale để lấy bản dịch (mặc định là locale hiện tại)
+     * @param array $relations Mảng các quan hệ cần lấy bản dịch (ví dụ: ['categories'])
+     * @return array Dữ liệu đã dịch của bản ghi và quan hệ
+     */
+    public function getAllTranslatedData(string $locale = null, array $relations = []): array
+    {
+        $locale = $locale ?? app()->getLocale();
+        $translatedAttributes = $this->translatedAttributes();
+
+        // Eager load translations và quan hệ
+        $this->load(['translations' => function ($query) use ($locale) {
+            $query->where('locale', $locale);
+        }]);
+
+        $data = [];
+        foreach ($this->getAttributes() as $attribute => $value) {
+            if (in_array($attribute, $translatedAttributes)) {
+                $data[$attribute] = $this->getTranslatedAttribute($attribute, $locale);
+            } else {
+                $data[$attribute] = $value;
+            }
+        }
+
+        // Lấy bản dịch của các quan hệ
+        foreach ($relations as $relation) {
+            if ($this->relationLoaded($relation)) {
+                $relatedModels = $this->$relation; // Lấy quan hệ (ví dụ: categories)
+
+                // Xử lý quan hệ BelongsToMany hoặc HasMany
+                $translatedRelation = [];
+                $relatedModels = $relatedModels instanceof \Illuminate\Database\Eloquent\Collection
+                    ? $relatedModels
+                    : collect([$relatedModels]);
+
+                foreach ($relatedModels as $relatedModel) {
+                    // Eager load translations cho model liên quan
+                    $relatedModel->load(['translations' => function ($query) use ($locale) {
+                        $query->where('locale', $locale);
+                    }]);
+
+                    // Kiểm tra nếu model liên quan có Translatable trait
+                    if (method_exists($relatedModel, 'translatedAttributes')) {
+                        $relatedTranslatedAttributes = $relatedModel->translatedAttributes();
+                        $relatedData = [];
+
+                        foreach ($relatedModel->getAttributes() as $attribute => $value) {
+                            if (in_array($attribute, $relatedTranslatedAttributes)) {
+                                $relatedData[$attribute] = $relatedModel->getTranslatedAttribute($attribute, $locale);
+                            } else {
+                                $relatedData[$attribute] = $value;
+                            }
+                        }
+
+                        $translatedRelation[] = $relatedData;
+                    } else {
+                        $translatedRelation[] = $relatedModel->toArray();
+                    }
+                }
+
+                $data[$relation] = $translatedRelation;
+            }
+        }
+
+        return $data;
     }
 
     /**

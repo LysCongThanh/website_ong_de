@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\HasFlexiblePricing;
+use App\Traits\Policyable;
 use App\Traits\Trackable;
 use App\Traits\Translatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ticket extends Model
 {
-    use HasFactory, SoftDeletes, Trackable, Translatable;
+    use HasFactory, SoftDeletes, Trackable, Translatable, HasFlexiblePricing, Policyable;
 
     protected $fillable = [
         'name',
