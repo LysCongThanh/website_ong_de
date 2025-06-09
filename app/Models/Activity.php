@@ -9,10 +9,12 @@ use App\Traits\Translatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 
 class Activity extends Model
 {
-    use HasFactory, SoftDeletes, Trackable, Translatable, HasMedia, Policyable;
+    use HasFactory, SoftDeletes, HasSlug, Trackable, Translatable, HasMedia, Policyable;
 
     protected $fillable = [
         'name',
@@ -43,5 +45,13 @@ class Activity extends Model
             'conditions',
             'location_area'
         ];
+    }
+
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('name')
+            ->saveSlugsTo('slug')
+            ->doNotGenerateSlugsOnUpdate();
     }
 }
