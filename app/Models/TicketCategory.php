@@ -6,10 +6,12 @@ use App\Traits\Translatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 class TicketCategory extends Model
 {
-    use HasFactory, Translatable;
+    use HasFactory, Translatable, InteractsWithMedia;
 
     protected $fillable = [
         'name',

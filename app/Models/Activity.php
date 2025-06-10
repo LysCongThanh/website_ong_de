@@ -2,19 +2,21 @@
 
 namespace App\Models;
 
-use App\Traits\HasMedia;
+use App\Traits\HasFlexiblePricing;
 use App\Traits\Policyable;
 use App\Traits\Trackable;
 use App\Traits\Translatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
-class Activity extends Model
+class Activity extends Model  implements HasMedia
 {
-    use HasFactory, SoftDeletes, HasSlug, Trackable, Translatable, HasMedia, Policyable;
+    use HasFactory, SoftDeletes, HasSlug, Trackable, Translatable, Policyable, InteractsWithMedia, HasFlexiblePricing;
 
     protected $fillable = [
         'name',
@@ -53,5 +55,19 @@ class Activity extends Model
             ->generateSlugsFrom('name')
             ->saveSlugsTo('slug')
             ->doNotGenerateSlugsOnUpdate();
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('main_image')->singleFile();
+        $this->addMediaCollection('gallery');
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function ($activity) {
+            $activity->clearMediaCollection('main_image');
+            $activity->clearMediaCollection('gallery');
+        });
     }
 }
