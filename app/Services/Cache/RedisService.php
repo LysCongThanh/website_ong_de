@@ -1,10 +1,10 @@
 <?php
 
-// app/Services/RedisService.php
 namespace App\Services\Cache;
 
 use Predis\Client;
 use Illuminate\Support\Facades\Log;
+use Exception;
 
 class RedisService
 {
@@ -21,7 +21,7 @@ class RedisService
             'database' => config('database.redis.default.database', 0),
         ]);
 
-        $this->defaultTtl = config('cache.default_ttl', 86400); // 1 hour default
+        $this->defaultTtl = config('cache.default_ttl', 86400);
     }
 
     /**
@@ -32,7 +32,7 @@ class RedisService
         try {
             $data = $this->redis->get($key);
             return $data ? json_decode($data, true) : null;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Redis get error: ' . $e->getMessage());
             return null;
         }
@@ -48,11 +48,11 @@ class RedisService
             $serializedData = json_encode($data);
 
             if ($ttl > 0) {
-                return $this->redis->setex($key, $ttl, $serializedData) === 'OK';
+                return $this->redis->setex($key, $ttl, $serializedData) == 'OK';
             } else {
                 return $this->redis->set($key, $serializedData) === 'OK';
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Redis set error: ' . $e->getMessage());
             return false;
         }
@@ -65,7 +65,7 @@ class RedisService
     {
         try {
             return $this->redis->del($key) > 0;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Redis delete error: ' . $e->getMessage());
             return false;
         }
@@ -82,7 +82,7 @@ class RedisService
                 return 0;
             }
             return $this->redis->del($keys);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Redis delete by pattern error: ' . $e->getMessage());
             return 0;
         }
@@ -95,7 +95,7 @@ class RedisService
     {
         try {
             return $this->redis->exists($key) > 0;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Redis exists error: ' . $e->getMessage());
             return false;
         }
@@ -108,7 +108,7 @@ class RedisService
     {
         try {
             return $this->redis->ttl($key);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Redis TTL error: ' . $e->getMessage());
             return -1;
         }

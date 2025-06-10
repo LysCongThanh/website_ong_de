@@ -14,19 +14,12 @@ class TicketRepository extends BaseRepository
         return Ticket::class;
     }
 
-    public function getAll(): Collection
-    {
-        return $this->all(['name', 'id']);
-    }
-
     public function getAllTickets(
-        ?string $locale = null,
+        ?string $locale = 'vi',
         int     $limit = 15,
         bool    $paginate = true
     )
     {
-        $locale = $locale ?? 'zh'; // Default to 'zh' if null
-
         $query = $this->model()::query()
             ->select([
                 'id',
@@ -84,7 +77,7 @@ class TicketRepository extends BaseRepository
                             ]),
                     ]),
             ])
-            ->where('is_active', true) // Only fetch active tickets
+            ->where('is_active', true)
             ->orderBy('created_at', 'desc');
 
         return $paginate

@@ -16,17 +16,16 @@ class TicketDataService extends BaseService
         parent::__construct($repository, $redisService);
     }
 
-    public function getAllTickets(?string $locale = null, int $limit = 15, bool $paginate = true)
+    public function getAllTickets(?string $locale = null, int $limit = 15)
     {
         $suffix = implode('_', array_filter([
             $locale ?? 'no_locale',
             $limit,
-            $paginate ? 'paginated' : 'not_paginated'
         ]));
 
         return $this->getWithCache(
             method: 'getAllTickets',
-            params: [$locale, $limit, $paginate],
+            params: [$locale, $limit],
             cacheKeySuffix: $suffix
         );
     }

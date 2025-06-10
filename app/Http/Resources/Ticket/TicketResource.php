@@ -2,9 +2,22 @@
 
 namespace App\Http\Resources\Ticket;
 
-use Illuminate\Http\Request;
+use App\Models\BasePrice;
+use App\Models\CustomerCapacityPrice;
+use App\Models\CustomerSegmentPrice;
+use App\Models\TicketCategory;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property bool $is_active
+ * @property mixed $created_at
+ * @property mixed $updated_at
+ * @property TicketCategory $categories
+ * @property int $id
+ * @property BasePrice $basePrices
+ * @property CustomerCapacityPrice $capacityPrices
+ * @property CustomerSegmentPrice $segmentPrices
+ */
 class TicketResource extends JsonResource
 {
     protected string $locale;
@@ -15,7 +28,7 @@ class TicketResource extends JsonResource
         $this->locale = $locale ?? 'vi';
     }
 
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
             'id' => $this->id,
