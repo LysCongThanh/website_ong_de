@@ -2,24 +2,25 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Components\FormFields\BasePricingField;
+use App\Filament\Components\FormFields\CustomerCapacityPricingField;
+use App\Filament\Components\FormFields\CustomerSegmentPricingField;
+use App\Filament\Components\FormFields\PolicyField;
+use App\Filament\Components\TableFields\IsActiveColumn;
+use App\Filament\Components\TableFields\TrackableColumn;
 use App\Filament\Resources\ActivityResource\Pages;
 use App\Models\Activity;
-use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\ActionSize;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\{Builder, SoftDeletingScope};
 use Filament\Support\Enums\FontWeight;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Section;
-use Filament\Infolists\Infolist;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\Section as InfoSection;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\FacadesLog;
 use Illuminate\Support\Str;
 
 class ActivityResource extends Resource
@@ -28,7 +29,7 @@ class ActivityResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
 
-    protected static ?string $navigationLabel = 'Hoạt Động';
+    protected static ?string $navigationLabel = 'Quản lí hoạt Động';
 
     protected static ?string $modelLabel = 'Hoạt Động';
 
@@ -162,7 +163,14 @@ class ActivityResource extends Resource
                                     ->icon('heroicon-m-photo')
                                     ->collapsible()
                                     ->schema([
-
+                                        Forms\Components\SpatieMediaLibraryFileUpload::make('main_image')
+                                            ->label('Hình ảnh chính')
+                                            ->collection('main_image')
+                                            ->image()
+                                            ->maxFiles(1)
+                                            ->downloadable()
+                                            ->previewable(true)
+                                            ->helperText('Chọn hình ảnh đại diện chính cho hoạt động (tối đa 1 ảnh)'),
                                     ]),
 
                                 Forms\Components\Section::make('Thư viện ảnh')
@@ -171,9 +179,43 @@ class ActivityResource extends Resource
                                     ->collapsible()
                                     ->collapsed()
                                     ->schema([
-
+                                        Forms\Components\SpatieMediaLibraryFileUpload::make('gallery')
+                                            ->label('Thư viện ảnh')
+                                            ->collection('gallery')
+                                            ->image()
+                                            ->multiple()
+                                            ->reorderable()
+                                            ->downloadable()
+                                            ->previewable(true)
+                                            ->helperText('Tải lên các hình ảnh bổ sung cho hoạt động (có thể chọn nhiều ảnh)'),
                                     ]),
                             ]),
+
+                        Tabs\Tab::make('Chính sách')
+                            ->icon('heroicon-o-shield-check')
+                            ->schema([
+                                PolicyField::make()
+                            ]),
+
+                        Tabs\Tab::make('Thiết lập giá')
+                            ->icon('heroicon-o-currency-dollar')
+                            ->badge(fn($record) => $record?->basePrices?->count() ?? 0)
+                            ->badgeColor('success')
+                            ->schema([
+                                BasePricingField::make(),
+                            ]),
+
+                        Tabs\Tab::make('Giá nhóm')
+                            ->icon('heroicon-o-user-group')
+                            ->schema([
+                                CustomerCapacityPricingField::make()
+                            ]),
+
+                        Tabs\Tab::make('Giá đối tượng')
+                            ->icon('heroicon-o-identification')
+                            ->schema([
+                                CustomerSegmentPricingField::make()
+                            ])
                     ])
                     ->columnSpanFull()
                     ->persistTabInQueryString(),
@@ -185,24 +227,23 @@ class ActivityResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\SpatieMediaLibraryImageColumn::make('main_image')
+                    ->label('Hình ảnh chính')
+                    ->collection('main_image')
+                    ->width(100)
+                    ->height(100),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Tên hoạt động')
                     ->searchable()
                     ->sortable()
                     ->weight(FontWeight::Medium)
-                    ->description(fn (Activity $record): string => $record->short_description ?? 'Không có mô tả'),
-
-                Tables\Columns\TextColumn::make('slug')
-                    ->label('Đường dẫn')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->copyable()
-                    ->copyMessage('Đã sao chép đường dẫn!')
-                    ->fontFamily('mono'),
+                    ->description(fn(Activity $record): string => $record->short_description ?? 'Không có mô tả'),
 
                 Tables\Columns\TextColumn::make('location_area')
                     ->label('Khu vực')
                     ->searchable()
+                    ->color('gray')
+                    ->badge()
                     ->sortable()
                     ->placeholder('Chưa xác định')
                     ->icon('heroicon-m-map-pin'),
@@ -214,39 +255,14 @@ class ActivityResource extends Resource
                         $max = $record->max_participants ?? '∞';
                         return "{$min} - {$max}";
                     })
+                    ->color('gray')
+                    ->badge()
+                    ->alignCenter()
                     ->icon('heroicon-m-users'),
 
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label('Trạng thái')
-                    ->boolean()
-                    ->trueIcon('heroicon-o-check-circle')
-                    ->falseIcon('heroicon-o-x-circle')
-                    ->trueColor('success')
-                    ->falseColor('danger')
-                    ->sortable(),
+                IsActiveColumn::make(),
 
-                Tables\Columns\TextColumn::make('creator.name')
-                    ->label('Người tạo')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->placeholder('Hệ thống'),
-
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Ngày tạo')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Cập nhật cuối')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable()
-                    ->since()
-                    ->description(fn (Activity $record): string =>
-                    $record->lastUpdater
-                        ? "bởi {$record->lastUpdater->name}"
-                        : "bởi hệ thống"
-                    ),
+                ...TrackableColumn::make()
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
@@ -268,24 +284,60 @@ class ActivityResource extends Resource
 
                 Tables\Filters\Filter::make('has_participants_limit')
                     ->label('Có giới hạn số người')
-                    ->query(fn (Builder $query): Builder =>
-                    $query->whereNotNull('max_participants')
+                    ->query(fn(Builder $query): Builder => $query->whereNotNull('max_participants')
                     ),
-
-                Tables\Filters\TrashedFilter::make()
-                    ->label('Đã xóa'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
-                    ->label('Xem'),
-                Tables\Actions\EditAction::make()
-                    ->label('Sửa'),
-                Tables\Actions\DeleteAction::make()
-                    ->label('Xóa'),
-                Tables\Actions\RestoreAction::make()
-                    ->label('Khôi phục'),
-                Tables\Actions\ForceDeleteAction::make()
-                    ->label('Xóa vĩnh viễn'),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make()
+                        ->label('Xem chi tiết')
+                        ->slideOver()
+                        ->color('success')
+                        ->icon('heroicon-o-eye')
+                        ->modalIcon('heroicon-o-information-circle')
+                        ->modalHeading(fn($record) => "Chi tiết hoạt động: {$record->name}")
+                        ->modalWidth(MaxWidth::SevenExtraLarge)
+                        ->tooltip('Xem thông tin chi tiết hoạt động'),
+                    Tables\Actions\EditAction::make()
+                        ->label('Chỉnh sửa')
+                        ->color('warning')
+                        ->icon('heroicon-o-pencil')
+                        ->tooltip('Chỉnh sửa thông tin hoạt động'),
+                    Tables\Actions\DeleteAction::make()
+                        ->label('Xóa')
+                        ->color('danger')
+                        ->icon('heroicon-o-trash')
+                        ->tooltip('Xóa hoạt động (có thể khôi phục)')
+                        ->requiresConfirmation()
+                        ->modalHeading('Xác nhận xóa hoạt động')
+                        ->modalDescription('Bạn có chắc chắn muốn xóa hoạt động này? Hành động này có thể được khôi phục.')
+                        ->modalSubmitActionLabel('Xóa'),
+                    Tables\Actions\RestoreAction::make()
+                        ->label('Khôi phục')
+                        ->color('info')
+                        ->icon('heroicon-o-arrow-path')
+                        ->tooltip('Khôi phục hoạt động đã xóa')
+                        ->requiresConfirmation()
+                        ->modalHeading('Xác nhận khôi phục hoạt động')
+                        ->modalDescription('Bạn có muốn khôi phục hoạt động này?')
+                        ->modalSubmitActionLabel('Khôi phục'),
+                    Tables\Actions\ForceDeleteAction::make()
+                        ->label('Xóa vĩnh viễn')
+                        ->color('danger')
+                        ->icon('heroicon-o-x-circle')
+                        ->tooltip('Xóa vĩnh viễn hoạt động (không thể khôi phục)')
+                        ->requiresConfirmation()
+                        ->modalHeading('Xác nhận xóa vĩnh viễn')
+                        ->modalDescription('Bạn có chắc chắn muốn xóa vĩnh viễn hoạt động này? Hành động này không thể hoàn tác.')
+                        ->modalSubmitActionLabel('Xóa vĩnh viễn'),
+                ])
+                    ->label('Thao tác')
+                    ->icon('heroicon-s-ellipsis-vertical')
+                    ->button()
+                    ->color('gray')
+                    ->size(ActionSize::Medium)
+                    ->dropdown()
+                    ->tooltip('Chọn hành động'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
