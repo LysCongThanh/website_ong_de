@@ -4,47 +4,48 @@ namespace App\Core\Abstracts;
 
 use App\Core\Traits\ApiResponse;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Response as ResponseAlias;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\JsonResponse;
 
 abstract class BaseController extends Controller
 {
     use ApiResponse;
 
-    protected function responseWithResource($resource, $message, $code = ResponseAlias::HTTP_OK): \Illuminate\Http\JsonResponse
+    protected function responseWithResource($resource, $message, $code = Response::HTTP_OK): JsonResponse
     {
         return $this->successResponse($resource, $message, $code);
     }
 
-    protected function respondWithCollection($collection, $message = '', $code = ResponseAlias::HTTP_OK): \Illuminate\Http\JsonResponse
+    protected function respondWithCollection($collection, $message = '', $code = Response::HTTP_OK): JsonResponse
     {
         return $this->successResponse($collection, $message, $code);
     }
 
-    protected function respondError($message, $code = ResponseAlias::HTTP_BAD_REQUEST): \Illuminate\Http\JsonResponse
+    protected function respondError($message, $code = Response::HTTP_BAD_REQUEST): JsonResponse
     {
         return $this->errorResponse($message, $code);
     }
 
-    protected function respondNotFound($message = 'Resource not found'): \Illuminate\Http\JsonResponse
+    protected function respondNotFound($message = 'Resource not found'): JsonResponse
     {
-        return $this->errorResponse($message, ResponseAlias::HTTP_NOT_FOUND);
+        return $this->errorResponse($message, Response::HTTP_NOT_FOUND);
     }
 
-    protected function respondUnauthorized($message = 'Unauthorized'): \Illuminate\Http\JsonResponse
+    protected function respondUnauthorized($message = 'Unauthorized'): JsonResponse
     {
-        return $this->errorResponse($message, ResponseAlias::HTTP_UNAUTHORIZED);
+        return $this->errorResponse($message, Response::HTTP_UNAUTHORIZED);
     }
 
-    protected function respondForbidden($message = 'Forbidden'): \Illuminate\Http\JsonResponse
+    protected function respondForbidden($message = 'Forbidden'): JsonResponse
     {
-        return $this->errorResponse($message, ResponseAlias::HTTP_FORBIDDEN);
+        return $this->errorResponse($message, Response::HTTP_FORBIDDEN);
     }
 
-    protected function respondValidationErrors($errors): \Illuminate\Http\JsonResponse
+    protected function respondValidationErrors($errors): JsonResponse
     {
         return $this->errorResponse(
             'Validation errors',
-            ResponseAlias::HTTP_UNPROCESSABLE_ENTITY,
+            Response::HTTP_UNPROCESSABLE_ENTITY,
             $errors
         );
     }

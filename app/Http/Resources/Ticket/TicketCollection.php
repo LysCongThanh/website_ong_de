@@ -4,8 +4,17 @@ namespace App\Http\Resources\Ticket;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use App\Http\Resources\Ticket\TicketResource;
 
+/**
+ * @method perPage()
+ * @method currentPage()
+ * @method lastPage()
+ * @method nextPageUrl()
+ * @method previousPageUrl()
+ * @method url(int $int)
+ * @method firstItem()
+ * @method lastItem()
+ */
 class TicketCollection extends ResourceCollection
 {
     protected string $locale;
