@@ -96,22 +96,13 @@ class TypeSafeCacheService
             return $metadata;
         }
 
-        switch ($metadata['original_type']) {
-            case 'eloquent_collection':
-                return $this->deserializeEloquentCollection($metadata);
-
-            case 'paginator':
-                return $this->deserializePaginator($metadata);
-
-            case 'support_collection':
-                return collect($metadata['data']);
-
-            case 'eloquent_model':
-                return $this->deserializeEloquentModel($metadata);
-
-            default:
-                return $metadata['data'];
-        }
+        return match ($metadata['original_type']) {
+            'eloquent_collection' => $this->deserializeEloquentCollection($metadata),
+            'paginator' => $this->deserializePaginator($metadata),
+            'support_collection' => collect($metadata['data']),
+            'eloquent_model' => $this->deserializeEloquentModel($metadata),
+            default => $metadata['data'],
+        };
     }
 
     protected function serializeEloquentCollection(Collection $collection): array
@@ -130,11 +121,9 @@ class TypeSafeCacheService
             'was_recently_created' => $model->wasRecentlyCreated,
         ];
 
-        // Safely get original attributes
         try {
             $data['original'] = $model->getOriginal();
         } catch (\Exception $e) {
-            // If getting original fails, skip it
             $data['original'] = [];
         }
 
@@ -168,7 +157,7 @@ class TypeSafeCacheService
         return $data;
     }
 
-    protected function deserializeEloquentCollection(array $metadata): Collection
+    protected function deserializeEloquentCollection(array $metadata): SupportCollection
     {
         if (!$metadata['model_class'] || !class_exists($metadata['model_class'])) {
             return collect($metadata['data']);
@@ -185,7 +174,6 @@ class TypeSafeCacheService
     {
         $items = collect($metadata['data']);
 
-        // Reconstruct Eloquent models if model class exists
         if ($metadata['model_class'] && class_exists($metadata['model_class'])) {
             $items = $items->map(function ($itemData) use ($metadata) {
                 return $this->reconstructEloquentModel($metadata['model_class'], $itemData);
@@ -215,25 +203,20 @@ class TypeSafeCacheService
 
     protected function reconstructEloquentModel(string $modelClass, array $data): Model
     {
-        // Create new model instance
         $model = new $modelClass;
 
-        // Set attributes safely
         try {
             $model->setRawAttributes($data['attributes'], true);
         } catch (\Exception $e) {
-            // If setting raw attributes fails, try setting them one by one
             foreach ($data['attributes'] as $key => $value) {
                 try {
                     $model->setAttribute($key, $value);
                 } catch (\Exception $e) {
-                    // Skip problematic attributes (like dynamic pivot attributes)
                     continue;
                 }
             }
         }
 
-        // Set original attributes safely
         if (!empty($data['original'])) {
             try {
                 $reflection = new \ReflectionClass($model);
@@ -242,24 +225,20 @@ class TypeSafeCacheService
                     $originalProperty->setValue($model, $data['original']);
                 }
             } catch (\Exception $e) {
-                // If reflection fails, skip original attributes
             }
         }
 
-        // Set exists and was_recently_created flags
         $model->exists = $data['exists'] ?? false;
         if (isset($data['was_recently_created'])) {
             $model->wasRecentlyCreated = $data['was_recently_created'];
         }
 
-        // Reconstruct relationships
         if (isset($data['relations'])) {
             foreach ($data['relations'] as $relationName => $relationData) {
                 try {
                     $relationValue = $this->reconstructRelation($relationData);
                     $model->setRelation($relationName, $relationValue);
                 } catch (\Exception $e) {
-                    // Skip problematic relations
                     continue;
                 }
             }
