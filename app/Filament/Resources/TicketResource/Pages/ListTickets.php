@@ -18,6 +18,7 @@ class ListTickets extends ListRecords
         return [
             Actions\CreateAction::make()
                 ->label('Tạo ticket mới')
+                ->color('gray')
                 ->icon('heroicon-o-plus'),
         ];
     }

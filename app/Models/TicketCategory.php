@@ -13,7 +13,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  */
 class TicketCategory extends Model
 {
-    use HasFactory, Translatable, InteractsWithMedia;
+    use HasFactory, Translatable;
 
     protected $fillable = [
         'name',

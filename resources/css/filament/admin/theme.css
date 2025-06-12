@@ -1,0 +1,201 @@
+@import '/vendor/filament/filament/resources/css/theme.css';
+@import '/resources/css/filament/admin/default.css';
+@import '/resources/css/filament/admin/scrollbar.css';
+@import '/resources/css/filament/admin/table.css';
+@import '/resources/css/filament/admin/logo.css';
+@import '/resources/css/filament/admin/tiny.css';
+@import '/resources/css/filament/admin/sidebar.css';
+@import '/resources/css/filament/admin/action-button.css';
+@config 'tailwind.config.js';
+
+html {
+    font-size: .9rem !important;
+}
+
+@media screen and (max-width: 768px) {
+    html {
+        font-size: 0.7rem !important;
+    }
+}
+
+@keyframes gradientFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Enhanced Background for Filament Admin - Using Existing Classes Only */
+body, .fi-main {
+    min-height: 100vh;
+    @apply bg-gradient-to-br from-primary-200 via-indigo-50 to-gray-50
+    dark:from-gray-950 dark:to-primary-950 dark:bg-gray-950 ring-0 shadow-none;
+    animation: gradientFlow 20s ease infinite;
+    background-size: 200% 200%;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* New Dynamic Animation */
+@keyframes dynamicBlob {
+    0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+    33% {
+        transform: translate(15px, -25px) rotate(5deg) scale(1.1);
+    }
+    66% {
+        transform: translate(-10px, 20px) rotate(-3deg) scale(1.05);
+    }
+    100% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+}
+
+/* New Dynamic Animation */
+@keyframes dynamicBlob2 {
+    0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+    33% {
+        transform: translate(-10px, 20px) rotate(-3deg) scale(1.05);
+    }
+    66% {
+        transform: translate(15px, -25px) rotate(5deg) scale(1.1);
+    }
+    100% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+}
+
+/* Animated SVG Blob (Bottom-Right) */
+body::after, .fi-layout::after {
+    content: '';
+    @apply absolute top-[50px] right-0 w-[50vw] h-[50vh] opacity-10 dark:opacity-10;
+    background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"%3E%3Cdefs%3E%3ClinearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%"%3E%3Cstop offset="0%" style="stop-color:%23a7f3d0;"%3E%3C/stop%3E%3Cstop offset="100%" style="stop-color:%234ade80;"%3E%3C/stop%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d="M436,289Q438,328,425,370Q412,412,377,441.5Q342,471,296,473Q250,475,211.5,455Q173,435,125,429Q77,423,68,376Q59,329,37,289.5Q15,250,20,203.5Q25,157,72.5,138.5Q120,120,150.5,101.5Q181,83,215.5,51.5Q250,20,295,26.5Q340,33,363,73.5Q386,114,426.5,137Q467,160,450.5,205Q434,250,436,289Z" fill="url(%23gradient)"%3E%3C/path%3E%3C/svg%3E');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    pointer-events: none;
+    z-index: 0;
+    animation: dynamicBlob 22s ease-in-out infinite;
+}
+
+.fi-layout::before {
+    content: '';
+    @apply absolute top-[350px] right-[450px] w-[25vw] h-[25vh] opacity-30 dark:opacity-10;
+    background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"%3E%3Cdefs%3E%3ClinearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%"%3E%3Cstop offset="0%" style="stop-color:%23a7f3d0;"%3E%3C/stop%3E%3Cstop offset="100%" style="stop-color:%234ade80;"%3E%3C/stop%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d="M286,319Q170,388,168,246Q166,104,284,177Q402,250,286,319Z" fill="url(%23gradient)"%3E%3C/path%3E%3C/svg%3E');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    pointer-events: none;
+    z-index: 1;
+    animation: dynamicBlob2 22s ease-in-out infinite;
+}
+
+/* Enhanced Filament Components */
+.fi-section, .fi-container, .fi-card {
+    @apply relative bg-white/95 dark:bg-gray-900/80 backdrop-blur-md;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03),
+    0 4px 15px rgba(0, 0, 0, 0.08),
+    0 8px 25px rgba(0, 0, 0, 0.04);
+    @apply border border-gray-100 dark:border-gray-700;
+    z-index: 1;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced Text Readability */
+.fi-main * {
+    @apply text-gray-800 dark:text-gray-100;
+}
+
+.fi-section h1, .fi-section h2, .fi-section h3 {
+    @apply text-gray-800 dark:text-white;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+/* Enhanced Primary Button Styling */
+.fi-btn.fi-btn-color-primary {
+    @apply bg-green-600 text-white hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600;
+    border-radius: 0.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25);
+    font-weight: 500;
+}
+
+.fi-btn.fi-btn-color-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.35);
+}
+
+/* Enhanced Scrollbar Styling */
+body, .fi-main {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(74, 222, 128, 0.4) transparent;
+}
+
+body::-webkit-scrollbar, .fi-main::-webkit-scrollbar {
+    width: 6px;
+}
+
+body::-webkit-scrollbar-thumb, .fi-main::-webkit-scrollbar-thumb {
+    @apply bg-green-300 rounded-full;
+    background: linear-gradient(to bottom, rgba(167, 243, 208, 0.8), rgba(74, 222, 128, 0.9));
+    border-radius: 3px;
+    transition: background 0.3s ease;
+}
+
+body::-webkit-scrollbar-thumb:hover, .fi-main::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, rgba(167, 243, 208, 0.9), rgba(74, 222, 128, 1));
+}
+
+body::-webkit-scrollbar-track, .fi-main::-webkit-scrollbar-track {
+    @apply bg-transparent;
+}
+
+/* Enhanced Responsive Adjustments */
+@media (max-width: 640px) {
+    body::before, .fi-main::before {
+        @apply w-[80vw] h-[40vh] opacity-20;
+        animation-duration: 15s;
+        filter: blur(0.8px);
+    }
+
+    body::after, .fi-main::after {
+        @apply w-[90vw] h-[50vh] opacity-15;
+        animation-duration: 18s;
+        filter: blur(0.6px);
+    }
+
+    .fi-section, .fi-container, .fi-card {
+        @apply border-none shadow-none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        backdrop-filter: blur(8px);
+    }
+}
+
+@media (max-width: 768px) {
+    body::before, .fi-main::before {
+        opacity: 0.18;
+    }
+
+    body::after, .fi-main::after {
+        opacity: 0.12;
+    }
+}
+
+/* Performance Optimization */
+@media (prefers-reduced-motion: reduce) {
+    body::before, .fi-main::before,
+    body::after, .fi-main::after {
+        animation: none;
+        transform: none;
+    }
+}

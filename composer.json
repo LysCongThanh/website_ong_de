@@ -10,6 +10,7 @@
   "require": {
     "php": "^8.1",
     "ext-fileinfo": "*",
+    "amidesfahani/filament-tinyeditor": "^2.1",
     "andreia/filament-nord-theme": "^1.0",
     "bezhansalleh/filament-shield": "^3.3",
     "filament/filament": "^3.3",

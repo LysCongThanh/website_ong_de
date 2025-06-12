@@ -62,7 +62,7 @@ abstract class BaseService
     /**
      * Clear cache by pattern
      */
-    protected function clearCache(string $pattern = null): int
+    public function clearCache(string $pattern = null): int
     {
         $pattern = $pattern ?: $this->cachePrefix . ':*';
         return $this->typeSafeCache->forgetByPattern($pattern);

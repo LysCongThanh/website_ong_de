@@ -8,6 +8,8 @@ use App\Traits\Trackable;
 use App\Traits\Translatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -38,6 +40,34 @@ class Activity extends Model  implements HasMedia
         'max_participants' => 'integer',
     ];
 
+    protected static function booted(): void
+    {
+        static::deleting(function ($activity) {
+            $activity->clearMediaCollection('main_image');
+            $activity->clearMediaCollection('gallery');
+        });
+    }
+
+    public function services(): HasMany
+    {
+        return $this->hasMany(PackageService::class);
+    }
+
+    public function audiences(): BelongsToMany
+    {
+        return $this->belongsToMany(Audience::class, 'package_audiences');
+    }
+
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(PkgCategory::class, 'pgk_category_relations', 'package_id', 'category_id');
+    }
+
+    public function menus(): HasMany
+    {
+        return $this->hasMany(PkgMenu::class);
+    }
+
     public function translatedAttributes(): array
     {
         return [
@@ -53,8 +83,7 @@ class Activity extends Model  implements HasMedia
     {
         return SlugOptions::create()
             ->generateSlugsFrom('name')
-            ->saveSlugsTo('slug')
-            ->doNotGenerateSlugsOnUpdate();
+            ->saveSlugsTo('slug');
     }
 
     public function registerMediaCollections(): void
@@ -63,11 +92,14 @@ class Activity extends Model  implements HasMedia
         $this->addMediaCollection('gallery');
     }
 
-    protected static function booted(): void
+    public function getIsAvailableAttribute(): bool
     {
-        static::deleting(function ($activity) {
-            $activity->clearMediaCollection('main_image');
-            $activity->clearMediaCollection('gallery');
-        });
+        $now = now();
+
+        if (!$this->available_start || !$this->available_end) {
+            return true;
+        }
+
+        return $now->between($this->available_start, $this->available_end);
     }
 }
