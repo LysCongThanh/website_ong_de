@@ -4,8 +4,66 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9407420e9dd54ece49fc2f63e3422b8d",
+    "content-hash": "d8a6728c8e3ab296ff3e6305cd6dadf4",
     "packages": [
+        {
+            "name": "amidesfahani/filament-tinyeditor",
+            "version": "v2.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amidesfahani/filament-tinyeditor.git",
+                "reference": "0ce5cdf55559eef87a9b22286caebb504c46b9ec"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/amidesfahani/filament-tinyeditor/zipball/0ce5cdf55559eef87a9b22286caebb504c46b9ec",
+                "reference": "0ce5cdf55559eef87a9b22286caebb504c46b9ec",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1",
+                "spatie/laravel-package-tools": "^1.16",
+                "tinymce/tinymce": "^7.3.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.13"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AmidEsfahani\\FilamentTinyEditor\\TinyeditorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AmidEsfahani\\FilamentTinyEditor\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Amid Esfahani",
+                    "email": "amid.esfahani@gmail.com"
+                }
+            ],
+            "description": "Filament TinyMce Editor v6",
+            "keywords": [
+                "filament",
+                "laravel",
+                "tinyeditor",
+                "tinymce"
+            ],
+            "support": {
+                "issues": "https://github.com/amidesfahani/filament-tinyeditor/issues",
+                "source": "https://github.com/amidesfahani/filament-tinyeditor/tree/v2.1.1"
+            },
+            "time": "2025-06-09T09:44:07+00:00"
+        },
         {
             "name": "andreia/filament-nord-theme",
             "version": "v1.0.8",
@@ -1426,7 +1484,7 @@
         },
         {
             "name": "filament/actions",
-            "version": "v3.3.20",
+            "version": "v3.3.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/actions.git",
@@ -1479,16 +1537,16 @@
         },
         {
             "name": "filament/filament",
-            "version": "v3.3.20",
+            "version": "v3.3.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/panels.git",
-                "reference": "94ee92244d2a64666fb8c1ea50cb7315ebceb63b"
+                "reference": "8d915ef313835f46f49175396de82feb0166d8a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/panels/zipball/94ee92244d2a64666fb8c1ea50cb7315ebceb63b",
-                "reference": "94ee92244d2a64666fb8c1ea50cb7315ebceb63b",
+                "url": "https://api.github.com/repos/filamentphp/panels/zipball/8d915ef313835f46f49175396de82feb0166d8a8",
+                "reference": "8d915ef313835f46f49175396de82feb0166d8a8",
                 "shasum": ""
             },
             "require": {
@@ -1540,20 +1598,20 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-05-27T18:46:23+00:00"
+            "time": "2025-06-10T16:10:42+00:00"
         },
         {
             "name": "filament/forms",
-            "version": "v3.3.20",
+            "version": "v3.3.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/forms.git",
-                "reference": "d73cdda057a4f5bd409eab9573101e73edb404cc"
+                "reference": "014dd23a7691dc25bb037f26df852cfec5602d01"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/forms/zipball/d73cdda057a4f5bd409eab9573101e73edb404cc",
-                "reference": "d73cdda057a4f5bd409eab9573101e73edb404cc",
+                "url": "https://api.github.com/repos/filamentphp/forms/zipball/014dd23a7691dc25bb037f26df852cfec5602d01",
+                "reference": "014dd23a7691dc25bb037f26df852cfec5602d01",
                 "shasum": ""
             },
             "require": {
@@ -1596,11 +1654,11 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-06-03T13:40:37+00:00"
+            "time": "2025-06-10T16:10:45+00:00"
         },
         {
             "name": "filament/infolists",
-            "version": "v3.3.20",
+            "version": "v3.3.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/infolists.git",
@@ -1651,7 +1709,7 @@
         },
         {
             "name": "filament/notifications",
-            "version": "v3.3.20",
+            "version": "v3.3.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/notifications.git",
@@ -1703,7 +1761,7 @@
         },
         {
             "name": "filament/spatie-laravel-media-library-plugin",
-            "version": "v3.3.20",
+            "version": "v3.3.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/spatie-laravel-media-library-plugin.git",
@@ -1740,16 +1798,16 @@
         },
         {
             "name": "filament/support",
-            "version": "v3.3.20",
+            "version": "v3.3.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/support.git",
-                "reference": "4f9793ad3339301ca53ea6f2c984734f7ac38ce7"
+                "reference": "5c140580d7feeabb4d2b0007c854676ae87be1b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/support/zipball/4f9793ad3339301ca53ea6f2c984734f7ac38ce7",
-                "reference": "4f9793ad3339301ca53ea6f2c984734f7ac38ce7",
+                "url": "https://api.github.com/repos/filamentphp/support/zipball/5c140580d7feeabb4d2b0007c854676ae87be1b3",
+                "reference": "5c140580d7feeabb4d2b0007c854676ae87be1b3",
                 "shasum": ""
             },
             "require": {
@@ -1795,20 +1853,20 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-06-03T06:16:13+00:00"
+            "time": "2025-06-10T16:10:55+00:00"
         },
         {
             "name": "filament/tables",
-            "version": "v3.3.20",
+            "version": "v3.3.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/tables.git",
-                "reference": "1a107a8411549297b97d1142b1f7a5fa7a65e32b"
+                "reference": "3d52c23443f6846774a6a2ce60f6e6173ce20943"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/tables/zipball/1a107a8411549297b97d1142b1f7a5fa7a65e32b",
-                "reference": "1a107a8411549297b97d1142b1f7a5fa7a65e32b",
+                "url": "https://api.github.com/repos/filamentphp/tables/zipball/3d52c23443f6846774a6a2ce60f6e6173ce20943",
+                "reference": "3d52c23443f6846774a6a2ce60f6e6173ce20943",
                 "shasum": ""
             },
             "require": {
@@ -1847,11 +1905,11 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-06-02T09:43:47+00:00"
+            "time": "2025-06-10T16:10:40+00:00"
         },
         {
             "name": "filament/widgets",
-            "version": "v3.3.20",
+            "version": "v3.3.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/widgets.git",
@@ -8747,6 +8805,65 @@
                 "source": "https://github.com/tijsverkoyen/CssToInlineStyles/tree/v2.3.0"
             },
             "time": "2024-12-21T16:25:41+00:00"
+        },
+        {
+            "name": "tinymce/tinymce",
+            "version": "7.9.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tinymce/tinymce-dist.git",
+                "reference": "3d6219296c9a92c87337bb38fb502a469ac1167f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tinymce/tinymce-dist/zipball/3d6219296c9a92c87337bb38fb502a469ac1167f",
+                "reference": "3d6219296c9a92c87337bb38fb502a469ac1167f",
+                "shasum": ""
+            },
+            "type": "component",
+            "extra": {
+                "component": {
+                    "files": [
+                        "tinymce.min.js",
+                        "plugins/*/plugin.min.js",
+                        "themes/*/theme.min.js",
+                        "models/*/model.min.js",
+                        "skins/**",
+                        "icons/*/icons.min.js"
+                    ],
+                    "scripts": [
+                        "tinymce.js",
+                        "plugins/*/plugin.js",
+                        "themes/*/theme.js",
+                        "models/*/model.js",
+                        "icons/*/icons.js"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "Web based JavaScript HTML WYSIWYG editor control.",
+            "homepage": "https://www.tiny.cloud/",
+            "keywords": [
+                "contenteditable",
+                "editing",
+                "html",
+                "javascript",
+                "rich editor",
+                "rich text",
+                "rich text editor",
+                "richtext",
+                "rte",
+                "text",
+                "tinymce",
+                "wysiwyg"
+            ],
+            "support": {
+                "source": "https://github.com/tinymce/tinymce-dist/tree/7.9.1"
+            },
+            "time": "2025-05-29T02:22:36+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
