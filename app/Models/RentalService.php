@@ -20,6 +20,7 @@ class RentalService extends Model implements HasMedia
 
     protected $fillable = [
         'name',
+        'slug',
         'short_description',
         'long_description',
         'conditions',

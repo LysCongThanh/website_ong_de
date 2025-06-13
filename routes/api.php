@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('v1')->group(function () {
+
     Route::prefix('tickets')->group(function () {
         Route::get('/', [TicketController::class, 'index']);
         Route::get('/{id}', [TicketController::class, 'show']);
@@ -24,8 +25,14 @@ Route::prefix('v1')->group(function () {
     Route::prefix('ticket-categories')->group(function () {
         Route::get('/', [TicketController::class, 'getCategories']);
     });
+
     Route::prefix('activities')->group(function () {
         Route::get('/', [ActivityController::class, 'index']);
         Route::get('/{idOrSlug}', [ActivityController::class, 'show']);
+    });
+
+    Route::prefix('rental-services')->group(function () {
+        Route::get('/', [\App\Http\Controllers\RentalServiceController::class, 'index']);
+        Route::get('/{idOrSlug}', [\App\Http\Controllers\RentalServiceController::class, 'show']);
     });
 });
