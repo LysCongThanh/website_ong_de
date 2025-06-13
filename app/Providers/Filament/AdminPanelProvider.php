@@ -41,6 +41,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->brandLogo('/images/logo.png')
             ->brandLogoHeight('60px')
+            ->sidebarWidth('350px')
             ->favicon('/images/favicon-logo.png')
             ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
                 return $builder->groups([
@@ -55,10 +56,7 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make()
                         ->label('Quản lí gói tiết kiệm')
                         ->items([
-                            NavigationItem::make('Package')
-                                ->label('Gói tiết kiệm')
-                                ->icon('heroicon-o-rectangle-stack')
-                                ->url(fn(): string => PackageResource::getUrl())
+                            ...PackageResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make()
                         ->label('Tài khoản & phân quyền')

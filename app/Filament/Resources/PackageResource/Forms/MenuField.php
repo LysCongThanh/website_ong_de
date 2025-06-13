@@ -3,7 +3,8 @@
 namespace App\Filament\Resources\PackageResource\Forms;
 
 use Filament\Actions\Action;
-use Filament\Forms\Components\{Card, Grid, Repeater, Section, Select, TagsInput, Textarea, TextInput};
+use Filament\Forms\Components\{Card, Grid, Radio, Repeater, Section, Select, TagsInput, Textarea, TextInput};
+use function Laravel\Prompts\suggest;
 
 class MenuField
 {
@@ -20,16 +21,16 @@ class MenuField
                                 ->placeholder('Nhập tên menu...')
                                 ->required()
                                 ->maxLength(100)
-                                ->helperText('VD: Menu 1')
+                                ->helperText('VD: Menu Sáng Truyền Thống')
                                 ->columnSpan(2),
 
                             Select::make('type')
                                 ->label('Loại bữa ăn')
                                 ->options([
-                                    'breakfast' => '🌅 Bữa sáng',
-                                    'lunch' => '🌞 Bữa trưa',
-                                    'dinner' => '🌙 Bữa tối',
-                                    'snack' => '🍿 Ăn vặt',
+                                    'breakfast' => 'Bữa sáng',
+                                    'lunch' => 'Bữa trưa',
+                                    'dinner' => 'Bữa tối',
+                                    'snack' => 'Ăn vặt',
                                 ])
                                 ->native(false)
                                 ->required()
@@ -37,149 +38,153 @@ class MenuField
                         ]),
 
                     Textarea::make('description')
-                        ->label('Mô tả bữa ăn')
-                        ->placeholder('Mô tả chi tiết về bữa ăn, đặc điểm nổi bật...')
+                        ->label('Mô tả menu')
+                        ->placeholder('Mô tả chi tiết về menu, đặc điểm nổi bật...')
                         ->rows(3)
                         ->maxLength(500)
-                        ->helperText('Mô tả sẽ hiển thị cho khách hàng'),
+                        ->helperText('Mô tả sẽ hiển thị cho khách hàng')
+                        ->nullable(), // ✅ Thêm nullable nếu không bắt buộc
 
-                    // Menu Options Section
-                    Section::make('Thực đơn & Combo')
-                        ->description('Quản lý các combo và món ăn trong bữa ăn')
+                    Grid::make(12)
                         ->schema([
-                            Repeater::make('options')
+                            Radio::make('menu_structure')
+                                ->label('Cấu trúc menu')
+                                ->options([
+                                    'fixed' => 'Menu cố định (danh sách món ăn cố định)',
+                                    'options' => 'Menu nhiều lựa chọn (khách hàng chọn 1 trong nhiều menu)',
+                                ])
+                                ->columnSpan(3)
+                                ->descriptions([
+                                    'fixed' => 'Khách hàng sẽ nhận được tất cả món ăn trong danh sách',
+                                    'options' => 'Khách hàng có thể chọn 1 menu từ nhiều menu khác nhau',
+                                ])
+                                ->default('fixed')
+                                ->required() // ✅ Thêm required cho menu_structure
+                                ->live() // ✅ Thay reactive() bằng live()
+                                ->afterStateUpdated(function (callable $set, $state) {
+                                    // ✅ Reset data khi thay đổi structure
+                                    if ($state === 'fixed') {
+                                        $set('options', []);
+                                    } else {
+                                        $set('fixedItems', []);
+                                    }
+                                }),
+
+                            // ✅ Menu cố định - chỉ hiển thị khi chọn 'fixed'
+                            Repeater::make('fixedItems')
+                                ->label('Danh sách món ăn')
                                 ->relationship()
+                                ->columnSpan(9)
                                 ->schema([
-                                    // Combo Information
-                                    Card::make()
-                                        ->schema([
-                                            Grid::make(2)
-                                                ->schema([
-                                                    TextInput::make('name')
-                                                        ->label('Tên combo/set')
-                                                        ->placeholder('VD: Combo Sáng Truyền Thống')
-                                                        ->required()
-                                                        ->maxLength(150)
-                                                        ->prefixIcon('heroicon-m-bookmark')
-                                                        ->columnSpan(1),
+                                    TextInput::make('name')
+                                        ->label('Tên món')
+                                        ->placeholder('VD: Phở bò tái')
+                                        ->required()
+                                        ->maxLength(100)
+                                        ->prefixIcon('heroicon-m-cake'),
 
-                                                    TextInput::make('price')
-                                                        ->label('Giá combo')
-                                                        ->placeholder('VD: 50000')
-                                                        ->numeric()
-                                                        ->prefix('₫')
-                                                        ->minValue(0)
-                                                        ->columnSpan(1),
-                                                ]),
+                                    TextInput::make('quantity')
+                                        ->label('Số lượng')
+                                        ->numeric()
+                                        ->default(1)
+                                        ->minValue(1)
+                                        ->maxValue(20)
+                                        ->nullable(),
 
-                                            Textarea::make('description')
-                                                ->label('Mô tả combo')
-                                                ->placeholder('Mô tả chi tiết về combo, nguyên liệu, cách chế biến...')
-                                                ->rows(3)
-                                                ->maxLength(500)
-                                                ->helperText('Thông tin này sẽ hiển thị cho khách hàng'),
-                                        ]),
-
-                                    // Menu Items Section
-                                    Section::make('Danh sách món ăn')
-                                        ->description('Các món ăn trong combo này')
-                                        ->schema([
-                                            Repeater::make('items')
-                                                ->relationship()
-                                                ->schema([
-                                                    Card::make()
-                                                        ->schema([
-                                                            Grid::make(4)
-                                                                ->schema([
-                                                                    TextInput::make('name')
-                                                                        ->label('Tên món')
-                                                                        ->placeholder('VD: Phở bò tái')
-                                                                        ->required()
-                                                                        ->maxLength(100)
-                                                                        ->prefixIcon('heroicon-m-cake')
-                                                                        ->columnSpan(2),
-
-                                                                    TextInput::make('quantity')
-                                                                        ->label('Số lượng')
-                                                                        ->numeric()
-                                                                        ->default(1)
-                                                                        ->minValue(1)
-                                                                        ->maxValue(20)
-                                                                        ->columnSpan(1),
-
-                                                                    Select::make('unit')
-                                                                        ->label('Đơn vị')
-                                                                        ->options([
-                                                                            'bowl' => '🥣 Tô',
-                                                                            'plate' => '🍽️ Đĩa',
-                                                                            'cup' => '☕ Ly',
-                                                                            'piece' => '🔢 Cái',
-                                                                            'portion' => '🍱 Phần',
-                                                                            'bottle' => '🍾 Chai',
-                                                                            'glass' => '🥛 Cốc',
-                                                                        ])
-                                                                        ->native(false)
-                                                                        ->columnSpan(1),
-                                                                ]),
-                                                        ])
-                                                ])
-                                                ->itemLabel(function (array $state): ?string {
-                                                    $name = $state['name'] ?? '';
-                                                    $quantity = $state['quantity'] ?? 1;
-                                                    $unit = $state['unit'] ?? '';
-
-                                                    if (empty($name)) return 'Món ăn mới';
-
-                                                    $unitLabels = [
-                                                        'bowl' => 'tô',
-                                                        'plate' => 'đĩa',
-                                                        'cup' => 'ly',
-                                                        'piece' => 'cái',
-                                                        'portion' => 'phần',
-                                                        'bottle' => 'chai',
-                                                        'glass' => 'cốc',
-                                                    ];
-
-                                                    $unitText = $unitLabels[$unit] ?? $unit;
-                                                    return "{$name} ({$quantity} {$unitText})";
-                                                })
-                                                ->addActionLabel('➕ Thêm món ăn')
-
-                                                ->reorderableWithButtons()
-                                                ->collapsible()
-                                                ->defaultItems(1)
-                                                ->minItems(1)
-                                        ])
-                                        ->collapsible()
-                                        ->persistCollapsed(false)
+                                    TextInput::make('unit')
+                                        ->label('Đơn vị')
+                                        ->placeholder('VD: KG, dĩa, cái,...')
+                                        ->maxLength(50)
+                                        ->nullable(),
                                 ])
                                 ->itemLabel(function (array $state): ?string {
                                     $name = $state['name'] ?? '';
-                                    $price = $state['price'] ?? '';
-                                    $available = $state['is_available'] ?? true;
-
-                                    if (empty($name)) return 'Combo mới';
-
-                                    $status = $available ? '✅' : '❌';
-                                    $priceText = $price ? number_format($price) . '₫' : '';
-
-                                    return "{$status} {$name}" . ($priceText ? " - {$priceText}" : '');
+                                    return empty($name) ? 'Món ăn mới' : "🍽️ {$name}";
                                 })
-                                ->addActionLabel('➕ Thêm combo mới')
-
+                                ->addActionLabel('➕ Thêm món ăn')
                                 ->reorderableWithButtons()
                                 ->collapsible()
-                                ->defaultItems(1)
-                                ->minItems(1)
+                                ->defaultItems(0) // ✅ Đổi từ 1 thành 0 để tránh lỗi khi switch
+                                ->minItems(0) // ✅ Cho phép 0 items khi ẩn
+                                ->visible(fn(callable $get) => $get('menu_structure') === 'fixed')
+                                ->helperText('💡 Tất cả các món ăn trong danh sách sẽ được cung cấp cho khách hàng'),
+
+                            // ✅ Menu với nhiều lựa chọn - chỉ hiển thị khi chọn 'options'
+                            Repeater::make('options')
+                                ->label('Danh sách menu lựa chọn')
+                                ->columnSpan(9)
+                                ->relationship()
+                                ->schema([
+                                    TextInput::make('name')
+                                        ->label('Tên menu lựa chọn')
+                                        ->placeholder('VD: Menu Phở Bò, Menu Bún Chả, Menu Cơm Tấm...')
+                                        ->required()
+                                        ->maxLength(150)
+                                        ->prefixIcon('heroicon-m-bookmark'),
+
+                                    Textarea::make('description')
+                                        ->label('Mô tả menu')
+                                        ->placeholder('Mô tả chi tiết về menu này, nguyên liệu, cách chế biến...')
+                                        ->rows(3)
+                                        ->maxLength(500)
+                                        ->nullable()
+                                        ->helperText('Thông tin này sẽ hiển thị cho khách hàng khi họ chọn menu'),
+
+                                    Repeater::make('items')
+                                        ->label('Món ăn trong menu')
+                                        ->relationship()
+                                        ->schema([
+                                            TextInput::make('name')
+                                                ->label('Tên món')
+                                                ->placeholder('VD: Phở bò tái')
+                                                ->required()
+                                                ->maxLength(100)
+                                                ->prefixIcon('heroicon-m-cake'),
+
+                                            TextInput::make('quantity')
+                                                ->label('Số lượng')
+                                                ->numeric()
+                                                ->default(1)
+                                                ->minValue(1)
+                                                ->maxValue(20)
+                                                ->nullable(),
+
+                                            TextInput::make('unit')
+                                                ->label('Đơn vị')
+                                                ->placeholder('VD: KG, dĩa, cái,...')
+                                                ->maxLength(50)
+                                                ->nullable(),
+                                        ])
+                                        ->itemLabel(function (array $state): ?string {
+                                            $name = $state['name'] ?? '';
+                                            return empty($name) ? 'Món ăn mới' : "🍽️ {$name}";
+                                        })
+                                        ->addActionLabel('➕ Thêm món ăn')
+                                        ->reorderableWithButtons()
+                                        ->collapsible()
+                                        ->defaultItems(0)
+                                        ->minItems(0)
+                                ])
+                                ->itemLabel(function (array $state): ?string {
+                                    $name = $state['name'] ?? '';
+                                    $itemCount = count($state['items'] ?? []);
+                                    return empty($name) ? 'Menu mới' : "🍽️ {$name} ({$itemCount} món)";
+                                })
+                                ->addActionLabel('➕ Thêm menu lựa chọn mới')
+                                ->reorderableWithButtons()
+                                ->collapsible()
+                                ->defaultItems(0) // ✅ Đổi từ 1 thành 0
+                                ->minItems(0) // ✅ Cho phép 0 items khi ẩn
+                                ->visible(fn(callable $get) => $get('menu_structure') === 'options')
+                                ->helperText('💡 Khách hàng sẽ chọn 1 menu từ danh sách các menu có sẵn'),
                         ])
-                        ->collapsible()
-                        ->persistCollapsed(false)
                 ])
                 ->itemLabel(function (array $state): ?string {
                     $name = $state['name'] ?? '';
                     $type = $state['type'] ?? '';
+                    $structure = $state['menu_structure'] ?? 'fixed';
 
-                    if (empty($name)) return 'Bữa ăn mới';
+                    if (empty($name)) return 'Menu mới';
 
                     $typeLabels = [
                         'breakfast' => '🌅 Sáng',
@@ -188,16 +193,22 @@ class MenuField
                         'snack' => '🍿 Vặt',
                     ];
 
-                    $typeText = $typeLabels[$type] ?? $type;
-                    return "{$name} - {$typeText}";
-                })
-                ->addActionLabel('➕ Thêm bữa ăn mới')
+                    $structureLabels = [
+                        'fixed' => '📋 Cố định',
+                        'options' => '🔀 Nhiều lựa chọn',
+                    ];
 
+                    $typeText = $typeLabels[$type] ?? $type;
+                    $structureText = $structureLabels[$structure] ?? $structure;
+
+                    return "{$name} - {$typeText} ({$structureText})";
+                })
+                ->addActionLabel('➕ Thêm menu mới')
                 ->reorderableWithButtons()
                 ->collapsible()
                 ->defaultItems(1)
                 ->minItems(1)
-                ->helperText('📋 Quản lý toàn bộ thực đơn theo từng bữa ăn. Mỗi bữa ăn có thể có nhiều combo khác nhau.')
+                ->helperText('📋 Quản lý thực đơn theo từng menu. Chọn cấu trúc phù hợp: cố định hoặc nhiều lựa chọn.')
                 ->columnSpanFull()
         ];
     }

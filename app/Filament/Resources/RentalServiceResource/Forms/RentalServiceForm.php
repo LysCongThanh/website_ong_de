@@ -41,19 +41,19 @@ class RentalServiceForm
                         ->badge(fn($record) => $record?->basePrices?->count() ?? 0)
                         ->badgeColor('success')
                         ->schema([
-                            BasePricingField::make(),
+                            ...BasePricingField::make(),
                         ]),
 
                     Tabs\Tab::make('Giá nhóm')
                         ->icon('heroicon-o-user-group')
                         ->schema([
-                            CustomerCapacityPricingField::make()
+                            ...CustomerCapacityPricingField::make()
                         ]),
 
                     Tabs\Tab::make('Giá đối tượng')
                         ->icon('heroicon-o-identification')
                         ->schema([
-                            CustomerSegmentPricingField::make()
+                            ...CustomerSegmentPricingField::make()
                         ])
                 ])->columnSpanFull()
         ]);

@@ -42,8 +42,8 @@ class PackageInformationField
                                     Forms\Components\Select::make('type')
                                         ->label('Loại gói')
                                         ->options([
-                                            'Nhóm khách lẻ' => 'Nhóm khách lẻ',
-                                            'Lữ hành' => 'Lữ hành',
+                                            'Nhóm khách lẻ' => 'individual',
+                                            'Lữ hành' => 'travel',
                                         ])
                                         ->required()
                                         ->native(false)

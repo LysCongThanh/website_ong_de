@@ -5,7 +5,6 @@
 @import '/resources/css/filament/admin/logo.css';
 @import '/resources/css/filament/admin/tiny.css';
 @import '/resources/css/filament/admin/sidebar.css';
-@import '/resources/css/filament/admin/action-button.css';
 @config 'tailwind.config.js';
 
 html {
